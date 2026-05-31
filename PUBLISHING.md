@@ -5,7 +5,7 @@ Instructions for maintainers to publish this chart on **GitHub Pages** and **Art
 ## Repository layout
 
 ```text
-mongo-compass-web-helm/
+mongo-compass-web-secure-helm/
 ├── chart/mongo-compass/     # chart source
 ├── artifacthub-repo.yaml    # Artifact Hub metadata
 ├── .github/workflows/       # optional CI
@@ -27,7 +27,7 @@ git init
 git add chart/ artifacthub-repo.yaml PUBLISHING.md
 git commit -m "Add mongo-compass Helm chart"
 git branch -M main
-git remote add origin https://github.com/YOUR_USER/mongo-compass-web-helm.git
+git remote add origin https://github.com/YOUR_USER/mongo-compass-web-secure-helm.git
 git push -u origin main
 ```
 
@@ -51,7 +51,7 @@ This produces `mongo-compass-X.Y.Z.tgz`.
 ### Build the index
 
 ```bash
-helm repo index . --url https://YOUR_USER.github.io/mongo-compass-web-helm
+helm repo index . --url https://YOUR_USER.github.io/mongo-compass-web-secure-helm
 ```
 
 Replace `YOUR_USER` and repo name with your actual GitHub Pages URL.
@@ -59,7 +59,7 @@ Replace `YOUR_USER` and repo name with your actual GitHub Pages URL.
 For subsequent releases, merge with the existing index to keep old versions:
 
 ```bash
-helm repo index . --url https://YOUR_USER.github.io/mongo-compass-web-helm --merge index.yaml
+helm repo index . --url https://YOUR_USER.github.io/mongo-compass-web-secure-helm --merge index.yaml
 ```
 
 ### Publish via gh-pages branch
@@ -88,9 +88,9 @@ https://YOUR_USER.github.io/mongo-compass-web-helm
 ### Verify
 
 ```bash
-curl https://YOUR_USER.github.io/mongo-compass-web-helm/index.yaml
+curl https://YOUR_USER.github.io/mongo-compass-web-secure-helm/index.yaml
 
-helm repo add mongo-compass-web https://YOUR_USER.github.io/mongo-compass-web-helm
+helm repo add mongo-compass-web-secure https://YOUR_USER.github.io/mongo-compass-web-secure-helm
 helm repo update
 helm search repo mongo-compass-web
 ```
@@ -178,8 +178,8 @@ git push origin main --tags
 1. Sign in at [artifacthub.io](https://artifacthub.io/)
 2. **Control Panel → Repositories → Add**
 3. Type: **Helm charts**
-4. Name: `mongo-compass-web-helm` (or your choice)
-5. URL: `https://YOUR_USER.github.io/mongo-compass-web-helm`
+4. Name: `mongo-compass-web-secure-helm` (or your choice)
+5. URL: `https://YOUR_USER.github.io/mongo-compass-web-secure-helm`
 6. Submit
 
 ### Update artifacthub-repo.yaml

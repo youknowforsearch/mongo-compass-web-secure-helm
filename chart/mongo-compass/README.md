@@ -22,14 +22,14 @@ Deploy a web-based MongoDB Compass UI on Kubernetes, with optional **OAuth2 Prox
 ### Add the Helm repository
 
 ```bash
-helm repo add mongo-compass-web https://underndog.github.io/mongo-compass-web-helm
+helm repo add mongo-compass-web-secure https://youknowforsearch.github.io/mongo-compass-web-secure-helm
 helm repo update
 ```
 
 ### Basic install (no authentication)
 
 ```bash
-helm install mongo-compass mongo-compass-web/mongo-compass \
+helm install mongo-compass mongo-compass-web-secure/mongo-compass \
   --set defaultMongodbUri="mongodb://user:password@host:27017/db"
 ```
 
@@ -53,7 +53,7 @@ python -c "import os,base64; print(base64.urlsafe_b64encode(os.urandom(32)).deco
 #### 3. Install the chart
 
 ```bash
-helm install mongo-compass mongo-compass-web/mongo-compass \
+helm install mongo-compass mongo-compass-web-secure/mongo-compass \
   --set ingress.enabled=true \
   --set ingress.className=nginx \
   --set ingress.hosts[0].host=compass.example.com \
@@ -76,7 +76,7 @@ When ingress or HTTPRoute is enabled, the OAuth callback URL is derived automati
 Use `httpRoute` instead of `ingress` when routing through [Envoy Gateway](https://gateway.envoyproxy.io/):
 
 ```bash
-helm install mongo-compass mongo-compass-web/mongo-compass \
+helm install mongo-compass mongo-compass-web-secure/mongo-compass \
   --set httpRoute.enabled=true \
   --set httpRoute.parentRefs[0].name=envoy-gateway \
   --set httpRoute.parentRefs[0].namespace=envoy-gateway-system \
@@ -108,7 +108,7 @@ kubectl create secret generic mongo-compass-oauth2 \
 Then install with:
 
 ```bash
-helm install mongo-compass mongo-compass-web/mongo-compass \
+helm install mongo-compass mongo-compass-web-secure/mongo-compass \
   --set httpRoute.enabled=true \
   --set httpRoute.hostnames[0]=compass.example.com \
   --set oauth2Proxy.enabled=true \
