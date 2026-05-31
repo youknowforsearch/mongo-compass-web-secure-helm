@@ -1,0 +1,44 @@
+apiVersion: v2
+name: mongo-compass
+description: Deploy MongoDB Compass Web with optional OAuth2 Proxy and Keycloak OIDC authentication
+type: application
+version: 1.3.0
+appVersion: 0.4.2
+home: https://github.com/underndog/mongo-compass-web-helm
+icon: https://raw.githubusercontent.com/underndog/mongo-compass-web-helm/master/docs/img/mongo-compass.png
+keywords:
+  - mongo
+  - mongodb
+  - mongo ui
+  - mongo compass
+  - mongo-compass
+  - oauth2-proxy
+  - keycloak
+  - oidc
+  - gateway-api
+  - httproute
+  - envoy
+sources:
+  - https://github.com/underndog/mongo-compass-web-helm
+maintainers:
+  - name: Nim
+    email: dc.nim94@gmail.com
+annotations:
+  artifacthub.io/license: Apache-2.0
+  artifacthub.io/category: database
+  artifacthub.io/changes: |
+    - kind: added
+      description: Gateway API HTTPRoute support for Envoy Gateway
+    - kind: added
+      description: Optional OAuth2 Proxy sidecar for Keycloak OIDC authentication
+    - kind: added
+      description: Artifact Hub metadata and publishing documentation
+  artifacthub.io/links: |
+    - name: Mongo Compass Web
+      url: https://github.com/haohanyang/compass-web
+    - name: OAuth2 Proxy
+      url: https://oauth2-proxy.github.io/oauth2-proxy/
+    - name: Keycloak
+      url: https://www.keycloak.org/
+    - name: Envoy Gateway
+      url: https://gateway.envoyproxy.io/

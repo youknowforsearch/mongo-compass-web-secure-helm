@@ -1,0 +1,161 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mongo-compass.fullname" . }}
+  labels:
+    {{- include "mongo-compass.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "mongo-compass.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "mongo-compass.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "mongo-compass.serviceAccountName" . }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            {{- if and .Values.mongodbUriFromSecret .Values.mongodbUriFromSecret.secretName .Values.mongodbUriFromSecret.secretKey }}
+            - name: CW_MONGO_URI
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mongodbUriFromSecret.secretName | quote }}
+                  key: {{ .Values.mongodbUriFromSecret.secretKey | quote }}
+            {{- else if .Values.defaultMongodbUri }}
+            - name: CW_MONGO_URI
+              value: "{{ .Values.defaultMongodbUri }}"
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          {{- with .Values.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+        {{- if .Values.oauth2Proxy.enabled }}
+        - name: oauth2-proxy
+          image: "{{ .Values.oauth2Proxy.image.repository }}:{{ .Values.oauth2Proxy.image.tag }}"
+          imagePullPolicy: {{ .Values.oauth2Proxy.image.pullPolicy }}
+          args:
+            - --provider=oidc
+            - --oidc-issuer-url={{ required "oauth2Proxy.oidc.issuerURL is required when oauth2Proxy is enabled" .Values.oauth2Proxy.oidc.issuerURL }}
+            - --client-id=$(OAUTH2_PROXY_CLIENT_ID)
+            - --client-secret=$(OAUTH2_PROXY_CLIENT_SECRET)
+            - --cookie-secret=$(OAUTH2_PROXY_COOKIE_SECRET)
+            - --redirect-url={{ include "mongo-compass.oauth2ProxyRedirectURL" . }}
+            - --upstream=http://127.0.0.1:{{ .Values.service.port }}/
+            - --http-address=0.0.0.0:{{ .Values.oauth2Proxy.port }}
+            {{- range .Values.oauth2Proxy.emailDomains }}
+            - --email-domain={{ . }}
+            {{- end }}
+            - --scope={{ join " " .Values.oauth2Proxy.scopes }}
+            {{- if .Values.oauth2Proxy.reverseProxy }}
+            - --reverse-proxy=true
+            {{- end }}
+            {{- if .Values.oauth2Proxy.passAccessToken }}
+            - --pass-access-token=true
+            {{- end }}
+            {{- if .Values.oauth2Proxy.setXAuthRequest }}
+            - --set-xauthrequest=true
+            {{- end }}
+            {{- if .Values.oauth2Proxy.setAuthorizationHeader }}
+            - --set-authorization-header=true
+            {{- end }}
+            {{- range .Values.oauth2Proxy.skipAuthRegex }}
+            - --skip-auth-regex={{ . }}
+            {{- end }}
+            {{- range .Values.oauth2Proxy.extraArgs }}
+            - {{ . }}
+            {{- end }}
+          env:
+            - name: OAUTH2_PROXY_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "mongo-compass.oauth2ProxySecretName" . }}
+                  key: client-id
+            - name: OAUTH2_PROXY_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "mongo-compass.oauth2ProxySecretName" . }}
+                  key: client-secret
+            - name: OAUTH2_PROXY_COOKIE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "mongo-compass.oauth2ProxySecretName" . }}
+                  key: cookie-secret
+          ports:
+            - name: oauth2-proxy
+              containerPort: {{ .Values.oauth2Proxy.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: oauth2-proxy
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: oauth2-proxy
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          {{- with .Values.oauth2Proxy.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+        {{- end }}
+      {{- with .Values.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

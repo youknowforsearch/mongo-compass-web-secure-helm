@@ -1,0 +1,212 @@
+# Default values for mongo-compass.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
+replicaCount: 1
+
+# This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
+image:
+  repository: haohanyang/compass-web
+  # This sets the pull policy for images.
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+# This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+imagePullSecrets: []
+# This is to override the chart name.
+nameOverride: ""
+fullnameOverride: ""
+
+# This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# This is for setting Kubernetes Annotations to a Pod.
+# For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+podAnnotations: {}
+# This is for setting Kubernetes Labels to a Pod.
+# For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+podLabels: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+# This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
+service:
+  # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+  type: ClusterIP
+  # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
+  port: 8080
+
+# This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+# Gateway API HTTPRoute for Envoy Gateway (or any Gateway API implementation).
+# Use this instead of ingress when routing through Envoy.
+httpRoute:
+  enabled: false
+  apiVersion: gateway.networking.k8s.io/v1
+  name: ""
+  annotations: {}
+  labels: {}
+  # URL scheme used to derive oauth2Proxy.redirectURL (Envoy Gateway typically terminates TLS).
+  scheme: https
+  # Gateway parent reference(s). Point these at your Envoy Gateway resource.
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: envoy-gateway
+      namespace: envoy-gateway-system
+      sectionName: https
+  hostnames:
+    - chart-example.local
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      # Optional Gateway API filters (RequestHeaderModifier, URLRewrite, etc.)
+      filters: []
+      # Optional per-rule timeouts
+      timeouts: {}
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+# This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+
+# This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# Additional volumes on the output Deployment definition.
+volumes: []
+# - name: foo
+#   secret:
+#     secretName: mysecret
+#     optional: false
+
+# Additional volumeMounts on the output Deployment definition.
+volumeMounts: []
+# - name: foo
+#   mountPath: "/etc/foo"
+#   readOnly: true
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+defaultMongodbUri: "mongodb://user:password@host:port/db"
+
+# You can omit this entire block, or leave it empty.
+mongodbUriFromSecret: {}
+  # secretName: ""
+  # secretKey: ""
+
+# OAuth2 Proxy sidecar for Keycloak (OIDC) authentication.
+# When enabled, all external traffic is authenticated before reaching Mongo Compass.
+oauth2Proxy:
+  enabled: false
+  image:
+    repository: quay.io/oauth2-proxy/oauth2-proxy
+    tag: v7.8.1
+    pullPolicy: IfNotPresent
+  port: 4180
+
+  oidc:
+    # Keycloak realm issuer URL, e.g. https://keycloak.example.com/realms/myrealm
+    issuerURL: ""
+
+  # OAuth callback URL. Auto-derived from httpRoute or ingress hostnames when enabled.
+  redirectURL: ""
+
+  # Credentials for the Keycloak OIDC client (confidential client).
+  clientID: ""
+  clientSecret: ""
+
+  # 32-byte base64-encoded secret for session cookies.
+  # Generate with: python -c "import os,base64; print(base64.urlsafe_b64encode(os.urandom(32)).decode())"
+  cookieSecret: ""
+
+  # Use a pre-created secret instead of chart-managed credentials.
+  # Secret must contain keys: client-id, client-secret, cookie-secret
+  existingSecret: ""
+
+  secret:
+    create: true
+
+  emailDomains:
+    - "*"
+
+  scopes:
+    - openid
+    - profile
+    - email
+
+  reverseProxy: true
+  passAccessToken: true
+  setXAuthRequest: true
+  setAuthorizationHeader: false
+
+  # Paths that bypass authentication (regex), e.g. [ "^/ping$" ]
+  skipAuthRegex: []
+
+  # Additional oauth2-proxy CLI arguments
+  extraArgs: []
+
+  resources: {}
