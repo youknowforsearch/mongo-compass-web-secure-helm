@@ -159,8 +159,8 @@ Release a new version:
 ```bash
 # bump version in chart/mongo-compass/Chart.yaml first
 git add chart/mongo-compass/Chart.yaml
-git commit -m "Release chart v1.3.0"
-git tag v1.3.0
+git commit -m "Release chart v1.0.0"
+git tag v1.0.0
 git push origin main --tags
 ```
 
