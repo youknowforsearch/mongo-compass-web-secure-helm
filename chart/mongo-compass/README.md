@@ -1,6 +1,6 @@
 # Mongo Compass Web Helm Chart
 
-Deploy a web-based MongoDB Compass UI on Kubernetes, with optional **OAuth2 Proxy** integration for **Keycloak** OIDC authentication.
+Deploy a web-based MongoDB Compass UI on Kubernetes, with optional **OAuth2 Proxy** integration for **Keycloak** OIDC authentication, also supports **httproutes** to Integrate with API Gateways.
 
 ## Features
 
