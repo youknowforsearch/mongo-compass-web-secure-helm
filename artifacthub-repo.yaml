@@ -1,0 +1,10 @@
+# Artifact Hub repository metadata.
+# See https://artifacthub.io/docs/topics/repositories/artifacthub-repo-yml-file/
+#
+# After publishing your Helm repo, register it at https://artifacthub.io/control-panel/repositories
+# and replace repositoryID with the value Artifact Hub assigns.
+
+repositoryID: 00000000-0000-0000-0000-000000000000
+owners:
+  - name: Nim
+    email: dc.nim94@gmail.com
