@@ -21,8 +21,8 @@ keywords:
 sources:
   - https://github.com/youknowforsearch/mongo-compass-web-secure-helm
 maintainers:
-  - name: Nim
-    email: dc.nim94@gmail.com
+  - name: Amirhossein Ebrahimzade
+    email: amirhebrahimzader@gmail.com
 annotations:
   artifacthub.io/license: Apache-2.0
   artifacthub.io/category: database
