@@ -30,7 +30,7 @@ entries:
           url: https://gateway.envoyproxy.io/
     apiVersion: v2
     appVersion: 0.5.0
-    created: "2026-06-05T14:42:01.046399587+03:30"
+    created: "2026-06-05T15:21:16.460039866+03:30"
     description: Deploy MongoDB Compass Web with optional OAuth2 Proxy and Keycloak
       OIDC authentication
     digest: 85b0e60ed6fa7f33960d0f6f18deda8b251b83e13b889d7eac08fc738e666684
@@ -59,7 +59,7 @@ entries:
     - https://github.com/youknowforsearch/mongo-compass-web-secure-helm
     type: application
     urls:
-    - https://youknowforsearch.github.io/mongo-compass-web-secure-helm/mongo-compass-1.1.0.tgz
+    - https://youknowforsearch.github.io/mongo-compass-web-helm/mongo-compass-1.1.0.tgz
     version: 1.1.0
   - annotations:
       artifacthub.io/category: database
@@ -78,7 +78,7 @@ entries:
           url: https://gateway.envoyproxy.io/
     apiVersion: v2
     appVersion: 0.4.2
-    created: "2026-06-05T14:42:01.041592714+03:30"
+    created: "2026-06-05T15:21:16.456617016+03:30"
     description: Deploy MongoDB Compass Web with optional OAuth2 Proxy and Keycloak
       OIDC authentication
     digest: 496c7bdb151333cac1347270cb896aa1204a43a2647636d43d386bb7a75291bc
@@ -104,6 +104,6 @@ entries:
     - https://github.com/youknowforsearch/mongo-compass-web-secure-helm
     type: application
     urls:
-    - https://youknowforsearch.github.io/mongo-compass-web-secure-helm/mongo-compass-1.0.0.tgz
+    - https://youknowforsearch.github.io/mongo-compass-web-helm/mongo-compass-1.0.0.tgz
     version: 1.0.0
-generated: "2026-06-05T14:42:01.039169065+03:30"
+generated: "2026-06-05T15:21:16.453969083+03:30"
