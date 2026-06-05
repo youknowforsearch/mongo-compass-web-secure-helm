@@ -5,7 +5,7 @@ type: application
 version: 1.1.0
 appVersion: 0.5.0
 home: https://github.com/youknowforsearch/mongo-compass-web-helm
-icon: https://raw.githubusercontent.com/underndog/mongo-compass-web-helm/master/docs/img/mongo-compass.png
+icon: https://raw.githubusercontent.com/youknowforsearch/mongo-compass-web-helm/main/mongo-compass-web-helm-tsp.png
 keywords:
   - mongo
   - mongodb
