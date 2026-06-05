@@ -32,7 +32,7 @@ API Gateway integration.
 ### Add the Helm repository
 
 ```bash
-helm repo add mongo-compass-web-secure https://youknowforsearch.github.io/mongo-compass-web-secure-helm
+helm repo add mongo-compass-web-secure https://youknowforsearch.github.io/mongo-compass-web-helm
 helm repo update
 ```
 

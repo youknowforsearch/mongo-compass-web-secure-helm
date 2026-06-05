@@ -4,7 +4,7 @@ description: Deploy MongoDB Compass Web with optional OAuth2 Proxy and Keycloak 
 type: application
 version: 1.1.0
 appVersion: 0.5.0
-home: https://github.com/youknowforsearch/mongo-compass-web-secure-helm
+home: https://github.com/youknowforsearch/mongo-compass-web-helm
 icon: https://raw.githubusercontent.com/underndog/mongo-compass-web-helm/master/docs/img/mongo-compass.png
 keywords:
   - mongo
@@ -22,7 +22,7 @@ keywords:
   - httproute
   - envoy
 sources:
-  - https://github.com/youknowforsearch/mongo-compass-web-secure-helm
+  - https://github.com/youknowforsearch/mongo-compass-web-helm
 maintainers:
   - name: Amirhossein Ebrahimzade
     email: amirhebrahimzader@gmail.com
