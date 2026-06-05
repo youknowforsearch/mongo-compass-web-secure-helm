@@ -3,7 +3,7 @@
 # After publishing your Helm repo, register it at https://artifacthub.io/control-panel/repositories
 # and replace repositoryID with the value Artifact Hub assigns.
 
-repositoryID: 87be9d78-e6f7-40e5-876a-6d8e55f8630e
+repositoryID: dfc4837c-cfdf-4be1-b5e5-55509ca006ab
 owners:
   - name: youknowforsearch
     email: amirhebrahimzader@gmail.com
