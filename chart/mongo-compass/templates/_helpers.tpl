@@ -62,6 +62,43 @@ Create the name of the service account to use
 {{- end }}
 
 {{/*
+Compass Web secret name (sensitive native settings)
+*/}}
+{{- define "mongo-compass.secretName" -}}
+{{- if .Values.secret.existingSecret }}
+{{- .Values.secret.existingSecret }}
+{{- else }}
+{{- printf "%s-env" (include "mongo-compass.fullname" .) }}
+{{- end }}
+{{- end }}
+
+{{/*
+Whether the chart should render a managed Compass Web secret.
+Returns "true" only when secret.create is set, no existingSecret is used, and at
+least one sensitive value is provided.
+*/}}
+{{- define "mongo-compass.createSecret" -}}
+{{- if and .Values.secret.create (not .Values.secret.existingSecret) }}
+{{- if or .Values.auth.oidc.clientSecret .Values.auth.sessionSecret .Values.auth.basic.password .Values.genAI.openaiApiKey .Values.editConnections.masterPassword }}
+{{- true -}}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{/*
+Native OIDC redirect URI for the compass-web /auth/callback endpoint.
+Derived from httpRoute/ingress hostname (and baseRoute) when not set explicitly.
+*/}}
+{{- define "mongo-compass.oidcRedirectURI" -}}
+{{- if .Values.auth.oidc.redirectUri }}
+{{- .Values.auth.oidc.redirectUri }}
+{{- else if include "mongo-compass.publicHostname" . }}
+{{- $base := .Values.baseRoute | default "" | trimSuffix "/" }}
+{{- printf "%s://%s%s/auth/callback" (include "mongo-compass.publicScheme" .) (include "mongo-compass.publicHostname" .) $base }}
+{{- end }}
+{{- end }}
+
+{{/*
 OAuth2 Proxy secret name
 */}}
 {{- define "mongo-compass.oauth2ProxySecretName" -}}

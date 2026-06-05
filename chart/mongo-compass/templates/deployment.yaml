@@ -1,3 +1,6 @@
+{{- if and .Values.auth.oidc.enabled .Values.oauth2Proxy.enabled }}
+{{- fail "auth.oidc.enabled (native OIDC) and oauth2Proxy.enabled cannot both be true; choose one authentication method" }}
+{{- end }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -41,6 +44,11 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
+            {{- $secretName := include "mongo-compass.secretName" . }}
+            - name: CW_HOST
+              value: "0.0.0.0"
+            - name: CW_PORT
+              value: "{{ .Values.service.port }}"
             {{- if and .Values.mongodbUriFromSecret .Values.mongodbUriFromSecret.secretName .Values.mongodbUriFromSecret.secretKey }}
             - name: CW_MONGO_URI
               valueFrom:
@@ -50,6 +58,112 @@ spec:
             {{- else if .Values.defaultMongodbUri }}
             - name: CW_MONGO_URI
               value: "{{ .Values.defaultMongodbUri }}"
+            {{- end }}
+            {{- with .Values.appName }}
+            - name: CW_APP_NAME
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.baseRoute }}
+            - name: CW_BASE_ROUTE
+              value: {{ . | quote }}
+            {{- end }}
+            {{- if .Values.editConnections.enabled }}
+            - name: CW_ENABLE_EDIT_CONNECTIONS
+              value: "true"
+            {{- if or .Values.secret.existingSecret .Values.editConnections.masterPassword }}
+            - name: CW_MASTER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName }}
+                  key: master-password
+            {{- end }}
+            {{- end }}
+            {{- if .Values.shell.enabled }}
+            - name: CW_ENABLE_SHELL
+              value: "true"
+            {{- end }}
+            {{- if .Values.genAI.enabled }}
+            - name: CW_ENABLE_GEN_AI
+              value: "true"
+            {{- if .Values.genAI.sampleDocuments }}
+            - name: CW_ENABLE_GEN_AI_SAMPLE_DOCUMENTS
+              value: "true"
+            {{- end }}
+            {{- if or .Values.secret.existingSecret .Values.genAI.openaiApiKey }}
+            - name: CW_OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName }}
+                  key: openai-api-key
+            {{- end }}
+            {{- with .Values.genAI.openaiModel }}
+            - name: CW_OPENAI_MODEL
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.genAI.querySystemPrompt }}
+            - name: CW_QUERY_SYSTEM_PROMPT
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.genAI.aggregationSystemPrompt }}
+            - name: CW_AGGREGATION_SYSTEM_PROMPT
+              value: {{ . | quote }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.auth.oidc.enabled }}
+            - name: CW_OIDC_ISSUER
+              value: {{ required "auth.oidc.issuer is required when auth.oidc.enabled is true" .Values.auth.oidc.issuer | quote }}
+            - name: CW_OIDC_CLIENT_ID
+              value: {{ required "auth.oidc.clientId is required when auth.oidc.enabled is true" .Values.auth.oidc.clientId | quote }}
+            {{- if or .Values.secret.existingSecret .Values.auth.oidc.clientSecret }}
+            - name: CW_OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName }}
+                  key: oidc-client-secret
+            {{- end }}
+            {{- $redirectURI := include "mongo-compass.oidcRedirectURI" . }}
+            {{- with $redirectURI }}
+            - name: CW_OIDC_REDIRECT_URI
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.auth.oidc.scope }}
+            - name: CW_OIDC_SCOPE
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.auth.oidc.postLogoutRedirectUri }}
+            - name: CW_OIDC_POST_LOGOUT_REDIRECT_URI
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.auth.oidc.allowedGroups }}
+            - name: CW_OIDC_ALLOWED_GROUPS
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.auth.oidc.groupsClaim }}
+            - name: CW_OIDC_GROUPS_CLAIM
+              value: {{ . | quote }}
+            {{- end }}
+            {{- end }}
+            {{- if or .Values.auth.oidc.enabled .Values.auth.sessionSecret }}
+            {{- if or .Values.secret.existingSecret .Values.auth.sessionSecret }}
+            - name: CW_SESSION_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName }}
+                  key: session-secret
+            {{- else }}
+            {{- fail "auth.sessionSecret (or secret.existingSecret with a session-secret key) is required when auth.oidc.enabled is true" }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.auth.basic.enabled }}
+            - name: CW_BASIC_AUTH_USERNAME
+              value: {{ required "auth.basic.username is required when auth.basic.enabled is true" .Values.auth.basic.username | quote }}
+            {{- if or .Values.secret.existingSecret .Values.auth.basic.password }}
+            - name: CW_BASIC_AUTH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName }}
+                  key: basic-auth-password
+            {{- end }}
             {{- end }}
           ports:
             - name: http

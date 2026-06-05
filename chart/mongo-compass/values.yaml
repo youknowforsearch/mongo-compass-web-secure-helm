@@ -158,8 +158,96 @@ mongodbUriFromSecret: {}
   # secretName: ""
   # secretKey: ""
 
+# -----------------------------------------------------------------------------
+# Compass Web application settings (compass-web 0.5.0+)
+# These map to the CW_* environment variables / CLI flags of compass-web.
+# -----------------------------------------------------------------------------
+
+# Application name shown in the UI (CW_APP_NAME).
+appName: ""
+
+# Base route prefix for all routes, e.g. /compass (CW_BASE_ROUTE).
+baseRoute: ""
+
+# Allow users to add/edit MongoDB connections from the UI.
+editConnections:
+  # CW_ENABLE_EDIT_CONNECTIONS
+  enabled: false
+  # Master password used to encrypt/decrypt saved connections (CW_MASTER_PASSWORD).
+  # Stored in the chart-managed Secret (see the `secret` block below).
+  masterPassword: ""
+
+# Mongo Shell (added in compass-web 0.5.0).
+shell:
+  # CW_ENABLE_SHELL
+  enabled: false
+
+# GenAI query / aggregation generation features.
+genAI:
+  # CW_ENABLE_GEN_AI
+  enabled: false
+  # Upload sample documents to the GenAI service (CW_ENABLE_GEN_AI_SAMPLE_DOCUMENTS).
+  sampleDocuments: false
+  # OpenAI API key (CW_OPENAI_API_KEY). Stored in the chart-managed Secret.
+  openaiApiKey: ""
+  # OpenAI model (CW_OPENAI_MODEL). Defaults to compass-web's built-in default.
+  openaiModel: ""
+  # Optional custom prompts (CW_QUERY_SYSTEM_PROMPT / CW_AGGREGATION_SYSTEM_PROMPT).
+  querySystemPrompt: ""
+  aggregationSystemPrompt: ""
+
+# Native authentication built into compass-web 0.5.0+.
+# This protects the Compass Web app itself (UI, REST API and MongoDB/shell
+# websockets). It is an alternative to the external `oauth2Proxy` sidecar below.
+# Do NOT enable both `auth.oidc` and `oauth2Proxy` at the same time.
+auth:
+  # Native OIDC / OAuth (Authorization Code + PKCE), e.g. Keycloak.
+  oidc:
+    # CW_OIDC_ISSUER, CW_OIDC_CLIENT_ID, etc.
+    enabled: false
+    # OIDC issuer URL, e.g. https://keycloak.example.com/realms/myrealm
+    issuer: ""
+    clientId: ""
+    # OIDC client secret (omit for public clients). Stored in the Secret.
+    clientSecret: ""
+    # Full callback URL. Auto-derived from httpRoute/ingress hostname when empty
+    # (https://<host><baseRoute>/auth/callback).
+    redirectUri: ""
+    # Scopes requested from the IdP. Defaults to "openid profile email".
+    scope: ""
+    # Redirect target after logout (CW_OIDC_POST_LOGOUT_REDIRECT_URI).
+    postLogoutRedirectUri: ""
+    # Comma-separated groups/roles allowed access (CW_OIDC_ALLOWED_GROUPS).
+    allowedGroups: ""
+    # ID token claim holding the user groups/roles. Defaults to "groups".
+    groupsClaim: ""
+
+  # Legacy Basic HTTP auth. Used when OIDC is disabled.
+  basic:
+    enabled: false
+    username: ""
+    # Stored in the chart-managed Secret.
+    password: ""
+
+  # Session cookie encryption secret (CW_SESSION_SECRET, >=32 chars).
+  # REQUIRED when auth.oidc.enabled is true. Stored in the chart-managed Secret.
+  # Generate with: openssl rand -base64 32
+  sessionSecret: ""
+
+# Chart-managed Secret holding sensitive compass-web settings:
+#   oidc-client-secret, session-secret, basic-auth-password,
+#   openai-api-key, master-password
+secret:
+  # Create the Secret from the plaintext values above.
+  create: true
+  # Use an existing Secret instead of the chart-managed one. The Secret must
+  # contain the relevant keys listed above (only those you actually use).
+  existingSecret: ""
+
 # OAuth2 Proxy sidecar for Keycloak (OIDC) authentication.
 # When enabled, all external traffic is authenticated before reaching Mongo Compass.
+# NOTE: With compass-web 0.5.0+ you can instead use native auth (see `auth` above),
+# which removes the need for this sidecar. Use one approach, not both.
 oauth2Proxy:
   enabled: false
   image:

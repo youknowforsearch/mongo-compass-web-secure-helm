@@ -2,8 +2,8 @@ apiVersion: v2
 name: mongo-compass
 description: Deploy MongoDB Compass Web with optional OAuth2 Proxy and Keycloak OIDC authentication
 type: application
-version: 1.0.0
-appVersion: 0.4.2
+version: 1.1.0
+appVersion: 0.5.0
 home: https://github.com/youknowforsearch/mongo-compass-web-secure-helm
 icon: https://raw.githubusercontent.com/underndog/mongo-compass-web-helm/master/docs/img/mongo-compass.png
 keywords:
@@ -15,6 +15,9 @@ keywords:
   - oauth2-proxy
   - keycloak
   - oidc
+  - oauth
+  - genai
+  - mongo-shell
   - gateway-api
   - httproute
   - envoy
@@ -28,7 +31,19 @@ annotations:
   artifacthub.io/category: database
   artifacthub.io/changes: |
     - kind: added
-      description: Initial release with OAuth2 Proxy, Keycloak OIDC, and Envoy Gateway HTTPRoute support
+      description: Native OIDC/OAuth authentication built into compass-web 0.5.0 (no oauth2-proxy sidecar required)
+    - kind: added
+      description: Native Basic auth support
+    - kind: added
+      description: Mongo Shell toggle (enable-shell)
+    - kind: added
+      description: GenAI query/aggregation options (OpenAI key, model, sample documents, custom prompts)
+    - kind: added
+      description: Edit-connections and master-password support for saving/encrypting connections
+    - kind: added
+      description: App name and base route configuration
+    - kind: changed
+      description: Bumped compass-web appVersion to 0.5.0
   artifacthub.io/links: |
     - name: Mongo Compass Web
       url: https://github.com/haohanyang/compass-web

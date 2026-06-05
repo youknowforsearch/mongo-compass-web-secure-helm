@@ -1,5 +1,11 @@
 1. Get the application URL by running these commands:
-{{- if .Values.oauth2Proxy.enabled }}
+{{- if .Values.auth.oidc.enabled }}
+
+Native OIDC/OAuth is enabled. Users sign in at <url>/auth/login before accessing Mongo Compass.
+{{- else if .Values.auth.basic.enabled }}
+
+Native Basic auth is enabled. Users must provide the configured username/password.
+{{- else if .Values.oauth2Proxy.enabled }}
 
 OAuth2 Proxy is enabled. Users must authenticate via Keycloak before accessing Mongo Compass.
 {{- end }}
@@ -40,7 +46,13 @@ OAuth2 Proxy is enabled. Users must authenticate via Keycloak before accessing M
   echo "Visit http://127.0.0.1:{{ include "mongo-compass.servicePort" . }} to use your application"
   kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME {{ include "mongo-compass.servicePort" . }}:$CONTAINER_PORT
 {{- end }}
-{{- if .Values.oauth2Proxy.enabled }}
+{{- if .Values.auth.oidc.enabled }}
+
+OIDC setup checklist:
+  1. Create an OIDC client in your IdP (e.g. Keycloak) with Standard flow (Auth Code + PKCE)
+  2. Set Valid Redirect URIs to: {{ include "mongo-compass.oidcRedirectURI" . | default "<derive from your public URL>/auth/callback" }}
+  3. Provide auth.oidc.clientSecret (confidential clients) and auth.sessionSecret (>=32 chars)
+{{- else if .Values.oauth2Proxy.enabled }}
 
 Keycloak setup checklist:
   1. Create a confidential OIDC client in Keycloak
