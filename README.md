@@ -1,8 +1,16 @@
-# Mongo Compass Web Helm Chart
+<p align="center">
+  <img src="mongo-compass-web-helm-tsp.png" alt="Mongo Compass Web Helm" width="160">
+</p>
+
+<h1 align="center">Mongo Compass Web Helm Chart</h1>
+
+<p align="center">
 
 [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/mongo-compass-web-helm)](https://artifacthub.io/packages/search?repo=mongo-compass-web-helm)
 [![Release](https://img.shields.io/github/v/release/youknowforsearch/mongo-compass-web-helm)](https://github.com/youknowforsearch/mongo-compass-web-helm/releases)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](#license)
+
+</p>
 
 A Helm chart to deploy [MongoDB Compass Web](https://github.com/haohanyang/compass-web) on Kubernetes.
 
