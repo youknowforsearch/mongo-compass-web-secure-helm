@@ -1,6 +1,6 @@
 apiVersion: v2
 name: mongo-compass
-description: Deploy MongoDB Compass Web with optional OAuth2 Proxy and Keycloak OIDC authentication
+description: Deploy MongoDB Compass Web with optional OAuth2 Proxy, Keycloak OIDC authentication & API Gateway support
 type: application
 version: 1.1.0
 appVersion: 0.5.0
